@@ -45,21 +45,27 @@ Use the provided script to deploy contracts. The script will:
 ```sh
 export RPC_URL=$(grep RPC_URL_SEPOLIA .env | cut -d '=' -f2)
 export TARGET_NET=sepolia
-forge script script/Deploy.s.sol --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --env-file .env
+export PRIVATE_KEY=$(grep PRIVATE_KEY .env | cut -d '=' -f2)
+export $(grep -v '^#' .env | xargs)
+forge script script/Deploy.s.sol --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast
 ```
 
 #### Base Sepolia
 ```sh
 export RPC_URL=$(grep RPC_URL_BASE .env | cut -d '=' -f2)
 export TARGET_NET=base
-forge script script/Deploy.s.sol --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --env-file .env
+export PRIVATE_KEY=$(grep PRIVATE_KEY .env | cut -d '=' -f2)
+export $(grep -v '^#' .env | xargs)
+forge script script/Deploy.s.sol --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast
 ```
 
 #### Arbitrum Sepolia
 ```sh
 export RPC_URL=$(grep RPC_URL_ARBITRUM .env | cut -d '=' -f2)
 export TARGET_NET=arbitrum
-forge script script/Deploy.s.sol --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --env-file .env
+export PRIVATE_KEY=$(grep PRIVATE_KEY .env | cut -d '=' -f2)
+export $(grep -v '^#' .env | xargs)
+forge script script/Deploy.s.sol --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast
 ```
 
 - The script will print deployed contract addresses to the console.
