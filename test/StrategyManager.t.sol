@@ -10,6 +10,7 @@ import {ERC20Mock} from "test/mocks/ERC20Mock.sol";
 import {Vault} from "src/Vault.sol";
 import {AaveStrategy} from "src/strategies/AaveStrategy.sol";
 import {MorphoStrategy} from "src/strategies/MorphoStrategy.sol";
+import {PortfolioLib} from "src/PortfolioLib.sol";
 
 // Mock for CCIP Adapter to capture sendMessage calls
 contract MockCCIPAdapter is CCIPRouterAdapter {
@@ -66,9 +67,7 @@ contract StrategyManagerTest is Test {
         
         // In the real contract, the adapter is created internally. For this test, we deploy the manager
         // and then overwrite the immutable adapter address in storage.
-        manager = new StrategyManager(owner, address(0), address(0), address(asset));
-        bytes32 slot = bytes32(uint256(uint160(address(manager))) | (uint256(uint96(2)) << 160));
-        vm.store(address(manager), slot, bytes32(uint256(uint160(address(mockAdapter)))));
+        manager = new StrategyManager(owner, address(asset), 8453, mockAdapter);
     }
 
     function test_addChainStrategy() public {
@@ -120,5 +119,25 @@ contract StrategyManagerTest is Test {
 
         // 5. Check that the mock strategy was called correctly
         assertEq(mockStrategy.lastDepositAmount(), depositAmount, "Deposit amount mismatch");
+    }
+
+    function test_onDeposit_sends_CrossChain_for_other_chains_only() public {
+        // managerのthisChainSelectorをBase(8453)として再デプロイ
+        manager = new StrategyManager(owner, address(asset), 8453, mockAdapter);
+
+        uint256 depositAmount = 100e18;
+        PortfolioLib.Allocation[] memory allocations = new PortfolioLib.Allocation[](3);
+        allocations[0] = PortfolioLib.Allocation({destinationChainSelector: 8453, strategyIndex: 0, percentage: 2000}); // Base 20%
+        allocations[1] = PortfolioLib.Allocation({destinationChainSelector: 1, strategyIndex: 0, percentage: 5000});    // Ethereum 50%
+        allocations[2] = PortfolioLib.Allocation({destinationChainSelector: 42161, strategyIndex: 0, percentage: 3000}); // Arbitrum 30%
+
+        // onDeposit実行（msg.value=0でOK）
+        manager.onDeposit(depositAmount, allocations);
+
+        // MockCCIPAdapterのlastMessageDataが正しくセットされているか（最後の呼び出しがArbitrum分）
+        (address receiver, bytes memory data, address token, uint256 amount) = abi.decode(mockAdapter.lastMessageData(), (address, bytes, address, uint256));
+        (uint16 strategyIndex, uint256 allocationAmount) = abi.decode(data, (uint16, uint256));
+        assertEq(mockAdapter.lastDestinationChainSelector(), 42161, "last destination chain is Arbitrum");
+        assertEq(allocationAmount, depositAmount * 3000 / 10000, "Arbitrum allocation amount");
     }
 }

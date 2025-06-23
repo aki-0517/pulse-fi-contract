@@ -14,6 +14,9 @@ import {PortfolioLib} from "./PortfolioLib.sol";
 contract Vault is ERC4626 {
     IStrategyManager public immutable strategyManager;
 
+    // ユーザーごとの未分配残高
+    mapping(address => uint256) public pendingDeposit;
+
     /**
      * @param _asset The address of the underlying asset token.
      * @param _strategyManager The address of the StrategyManager contract.
@@ -43,12 +46,7 @@ contract Vault is ERC4626 {
      *      Notifies the StrategyManager of the incoming deposit.
      */
     function afterDeposit(uint256 assets, uint256 shares) internal override {
-        // For the purpose of this implementation, we will use a placeholder allocation.
-        // In a real dApp, this data would come from the user.
-        PortfolioLib.Allocation[] memory allocations = new PortfolioLib.Allocation[](
-            0
-        );
-        strategyManager.onDeposit{value: msg.value}(assets, allocations);
+        // ユーザーからの配分指定がない場合は何もしない
     }
 
     /**
@@ -59,5 +57,40 @@ contract Vault is ERC4626 {
         // The StrategyManager would need a corresponding `onWithdraw` function
         // to coordinate asset retrieval from other chains.
         // strategyManager.onWithdraw(assets);
+    }
+
+    /**
+     * @notice ユーザーがVaultに資産をdepositする（分配はしない）
+     * @param assets デポジットする資産量
+     * @param receiver シェアの受取人
+     */
+    function depositOnly(uint256 assets, address receiver) external returns (uint256 shares) {
+        shares = deposit(assets, receiver);
+        pendingDeposit[receiver] += assets;
+    }
+
+    /**
+     * @notice ユーザーが分配割合を指定して、未分配残高を分配する
+     * @param allocations チェーンごとの分配割合
+     */
+    function distributePendingDeposit(PortfolioLib.Allocation[] calldata allocations) external payable {
+        uint256 amount = pendingDeposit[msg.sender];
+        require(amount > 0, "No pending deposit");
+        pendingDeposit[msg.sender] = 0;
+        strategyManager.onDeposit{value: msg.value}(amount, allocations);
+    }
+
+    /**
+     * @notice ユーザーが割合配分を指定してdepositできる関数
+     * @param assets デポジットする資産量
+     * @param receiver シェアの受取人
+     * @param allocations チェーンごとの分配割合
+     */
+    function depositWithAllocations(
+        uint256 assets,
+        address receiver,
+        PortfolioLib.Allocation[] calldata allocations
+    ) external payable returns (uint256 shares) {
+        revert("Use depositOnly and distributePendingDeposit");
     }
 }

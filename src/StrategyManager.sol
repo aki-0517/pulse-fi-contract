@@ -43,8 +43,9 @@ interface IStrategyManager {
  * @notice Core logic for managing strategies across multiple chains via CCIP.
  */
 contract StrategyManager is IStrategyManager, Owned {
-    CCIPRouterAdapter public immutable ccipAdapter;
+    CCIPRouterAdapter public ccipAdapter;
     address public immutable asset;
+    uint64 public immutable thisChainSelector;
 
     // Mapping from chain selector to a list of strategy addresses
     mapping(uint64 => IStrategy[]) internal chainStrategies;
@@ -53,12 +54,13 @@ contract StrategyManager is IStrategyManager, Owned {
 
     constructor(
         address _owner,
-        address router,
-        address link,
-        address _asset
+        address _asset,
+        uint64 _thisChainSelector,
+        CCIPRouterAdapter _adapter
     ) Owned(_owner) {
-        ccipAdapter = new CCIPRouterAdapter(router, link);
+        ccipAdapter = _adapter;
         asset = _asset;
+        thisChainSelector = _thisChainSelector;
     }
 
     function onDeposit(
@@ -66,11 +68,15 @@ contract StrategyManager is IStrategyManager, Owned {
         PortfolioLib.Allocation[] calldata allocations
     ) external payable override {
         PortfolioLib.validateAllocations(allocations);
-        // For each allocation, send a CCIP message to the destination chain's strategy
         for (uint i = 0; i < allocations.length; i++) {
             PortfolioLib.Allocation memory allocation = allocations[i];
             uint256 allocationAmount = (amount * allocation.percentage) /
                 PortfolioLib.PERCENTAGE_BASIS;
+
+            if (allocation.destinationChainSelector == thisChainSelector) {
+                // 自チェーン分はVaultに既に入っているので何もしない
+                continue;
+            }
 
             // Prepare the data for the remote strategy's deposit function
             bytes memory messageData = abi.encode(

@@ -66,22 +66,43 @@ contract VaultTest is Test {
         strategyManager.setMockTotalAssets(0); // Initial state
         vm.startPrank(USER);
         asset.approve(address(vault), DEPOSIT_AMOUNT);
-        
-        // In a real scenario, allocations would be provided. Here it's empty.
-        PortfolioLib.Allocation[] memory allocations = new PortfolioLib.Allocation[](0);
-        vault.deposit(DEPOSIT_AMOUNT, USER); // Note: Simplified call for ERC4626, onDeposit is internal
-        
+        vault.depositOnly(DEPOSIT_AMOUNT, USER);
         vm.stopPrank();
 
         assertEq(vault.balanceOf(USER), DEPOSIT_AMOUNT, "Shares minted");
+        assertEq(vault.pendingDeposit(USER), DEPOSIT_AMOUNT, "Pending deposit updated");
 
         // After deposit, the strategy manager should reflect the new total assets.
         // We simulate this by updating our mock.
         strategyManager.setMockTotalAssets(DEPOSIT_AMOUNT);
         assertEq(vault.totalAssets(), DEPOSIT_AMOUNT, "Total assets updated");
-        
-        // Verify manager was called
-        (uint256 receivedAmount, ) = abi.decode(strategyManager.lastOnDepositData(), (uint256, PortfolioLib.Allocation[]));
-        assertEq(receivedAmount, DEPOSIT_AMOUNT, "Manager onDeposit amount");
+    }
+
+    function test_distributePendingDeposit_calls_onDeposit_and_clears_pending() public {
+        strategyManager.setMockTotalAssets(0);
+        vm.startPrank(USER);
+        asset.approve(address(vault), DEPOSIT_AMOUNT);
+        vault.depositOnly(DEPOSIT_AMOUNT, USER);
+        assertEq(vault.pendingDeposit(USER), DEPOSIT_AMOUNT, "Pending deposit after depositOnly");
+
+        PortfolioLib.Allocation[] memory allocations = new PortfolioLib.Allocation[](3);
+        allocations[0] = PortfolioLib.Allocation({destinationChainSelector: 8453, strategyIndex: 0, percentage: 2000}); // Base 20%
+        allocations[1] = PortfolioLib.Allocation({destinationChainSelector: 1, strategyIndex: 0, percentage: 5000});    // Ethereum 50%
+        allocations[2] = PortfolioLib.Allocation({destinationChainSelector: 42161, strategyIndex: 0, percentage: 3000}); // Arbitrum 30%
+
+        vault.distributePendingDeposit(allocations);
+        assertEq(vault.pendingDeposit(USER), 0, "Pending deposit cleared");
+
+        // onDepositが正しい値で呼ばれたか検証
+        (uint256 receivedAmount, PortfolioLib.Allocation[] memory receivedAllocations) = abi.decode(strategyManager.lastOnDepositData(), (uint256, PortfolioLib.Allocation[]));
+        assertEq(receivedAmount, DEPOSIT_AMOUNT, "onDeposit amount");
+        assertEq(receivedAllocations.length, 3, "allocations length");
+        assertEq(receivedAllocations[0].destinationChainSelector, 8453, "base selector");
+        assertEq(receivedAllocations[1].destinationChainSelector, 1, "eth selector");
+        assertEq(receivedAllocations[2].destinationChainSelector, 42161, "arb selector");
+        assertEq(receivedAllocations[0].percentage, 2000, "base %");
+        assertEq(receivedAllocations[1].percentage, 5000, "eth %");
+        assertEq(receivedAllocations[2].percentage, 3000, "arb %");
+        vm.stopPrank();
     }
 }
