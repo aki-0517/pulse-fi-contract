@@ -2,23 +2,23 @@
 
 This repository implements a cross-chain ERC4626 vault system using Chainlink CCIP for secure asset distribution across Ethereum Sepolia, Base Sepolia, and Arbitrum Sepolia testnets.
 
-## デプロイ済みコントラクトアドレス（Sepolia）
+## Deployed Contract Addresses (Sepolia)
 
-- USDC: `0x7393F2Ca9A013cbcD106F882cDB59bd751982317`
+<!-- - USDC: `0x7393F2Ca9A013cbcD106F882cDB59bd751982317` -->
 - CCIPRouterAdapter: `0xc8eB22A16BEF444a3Aab0256f0Da7580F5ffcCb6`
 - StrategyManager: `0x0c2CB40E0e32Db49F51755b8Befbf7ADB82493fe`
 - Vault: `0xFCB7c1eC549c1afb2455f74b528d636790f346CB`
 
-## デプロイ済みコントラクトアドレス（Base Sepolia）
+## Deployed Contract Addresses (Base Sepolia)
 
-- USDC: `0x2B7930bE47948E058eDb8f5839f0D407c2f71de3`
+<!-- - USDC: `0x2B7930bE47948E058eDb8f5839f0D407c2f71de3` -->
 - CCIPRouterAdapter: `0x7c5041981F603f33274DD01461DED1e84A81fB4E`
 - StrategyManager: `0x23A9d854Eaf31F5eef9D9ada56e2b0Ed8c934391`
 - Vault: `0xF3fF4d12cF70F8CEF7c394E97a3b42cFd1f98443`
 
-## デプロイ済みコントラクトアドレス（Arbitrum Sepolia）
+## Deployed Contract Addresses (Arbitrum Sepolia)
 
-- USDC: `0x638cD4F2A8719395923AE38A3F12002fD782233e`
+<!-- - USDC: `0x638cD4F2A8719395923AE38A3F12002fD782233e` -->
 - CCIPRouterAdapter: `0x35a80Fa58254335e928aC344E7e2567072a89143`
 - StrategyManager: `0x4B5d8e87B2B720df38aa3Fe9e2dF3f220b3Ed815`
 - Vault: `0x5f1C42872Ee24D883eB35c9B81a83b14cF60e603`
