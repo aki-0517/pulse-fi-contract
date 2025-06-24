@@ -11,7 +11,7 @@ This repository implements a cross-chain ERC4626 vault system using Chainlink CC
 
 ## <img src="https://icons.llamao.fi/icons/chains/rsz_avalanche?w=24&h=24" style="border-radius: 50%;" /> Deployed Contract Addresses (Avalanche Fuji)
 
-- USDC: `0x3B0771b3703D7f0b8F0E6889fa5e04Ee3CDb16E6`
+<!-- - USDC: `0x3B0771b3703D7f0b8F0E6889fa5e04Ee3CDb16E6` -->
 - CCIPRouterAdapter: `0xfEF668183d47902a1938FBf1B0b1a59ae4cd8d79`
 - StrategyManager: `0xA7Ab9e165CDCAE5C646aFcc60b1Ad6084dbc1D9A`
 - Vault: `0x33bF6171E2FDA75f50F2Aa39090146d93DAd1b3B`
