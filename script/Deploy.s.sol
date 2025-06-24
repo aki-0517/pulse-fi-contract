@@ -40,6 +40,13 @@ contract Deploy is Script {
             chainSelector: 421614,
             name: "Arbitrum Sepolia"
         });
+        // Avalanche Fuji
+        configs["avalanche"] = NetworkConfig({
+            router: 0x554472a2720E5E7D5D3C817529aBA05EEd5F82D8,
+            link: 0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846,
+            chainSelector: 14767482510784806043,
+            name: "Avalanche Fuji"
+        });
     }
 
     function run() external {

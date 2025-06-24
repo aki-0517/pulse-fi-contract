@@ -1,22 +1,29 @@
 # Pulse Vault Contract
 
-This repository implements a cross-chain ERC4626 vault system using Chainlink CCIP for secure asset distribution across Ethereum Sepolia, Base Sepolia, and Arbitrum Sepolia testnets.
+This repository implements a cross-chain ERC4626 vault system using Chainlink CCIP for secure asset distribution across Ethereum Sepolia, Base Sepolia, Arbitrum Sepolia, and Avalanche Fuji testnets.
 
-## Deployed Contract Addresses (Sepolia)
+## <img src="https://icons.llamao.fi/icons/chains/rsz_ethereum?w=24&h=24" style="border-radius: 50%;" /> Deployed Contract Addresses (Sepolia)
 
 <!-- - USDC: `0x7393F2Ca9A013cbcD106F882cDB59bd751982317` -->
 - CCIPRouterAdapter: `0xc8eB22A16BEF444a3Aab0256f0Da7580F5ffcCb6`
 - StrategyManager: `0x0c2CB40E0e32Db49F51755b8Befbf7ADB82493fe`
 - Vault: `0xFCB7c1eC549c1afb2455f74b528d636790f346CB`
 
-## Deployed Contract Addresses (Base Sepolia)
+## <img src="https://icons.llamao.fi/icons/chains/rsz_avalanche?w=24&h=24" style="border-radius: 50%;" /> Deployed Contract Addresses (Avalanche Fuji)
+
+- USDC: `0x3B0771b3703D7f0b8F0E6889fa5e04Ee3CDb16E6`
+- CCIPRouterAdapter: `0xfEF668183d47902a1938FBf1B0b1a59ae4cd8d79`
+- StrategyManager: `0xA7Ab9e165CDCAE5C646aFcc60b1Ad6084dbc1D9A`
+- Vault: `0x33bF6171E2FDA75f50F2Aa39090146d93DAd1b3B`
+
+## <img src="https://icons.llamao.fi/icons/chains/rsz_base?w=24&h=24" style="border-radius: 50%;" /> Deployed Contract Addresses (Base Sepolia)
 
 <!-- - USDC: `0x2B7930bE47948E058eDb8f5839f0D407c2f71de3` -->
 - CCIPRouterAdapter: `0x7c5041981F603f33274DD01461DED1e84A81fB4E`
 - StrategyManager: `0x23A9d854Eaf31F5eef9D9ada56e2b0Ed8c934391`
 - Vault: `0xF3fF4d12cF70F8CEF7c394E97a3b42cFd1f98443`
 
-## Deployed Contract Addresses (Arbitrum Sepolia)
+## <img src="https://icons.llamao.fi/icons/chains/rsz_arbitrum?w=24&h=24" style="border-radius: 50%;" /> Deployed Contract Addresses (Arbitrum Sepolia)
 
 <!-- - USDC: `0x638cD4F2A8719395923AE38A3F12002fD782233e` -->
 - CCIPRouterAdapter: `0x35a80Fa58254335e928aC344E7e2567072a89143`
